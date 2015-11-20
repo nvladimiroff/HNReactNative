@@ -76,11 +76,18 @@ var HNReactNative = React.createClass({
       return this.renderLoad();
     } else {
       return (
-        <ListView
-            dataSource={this.state.dataSource}
-            renderRow={this.renderStory}
-            style={styles.listView}
-          />
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>
+              Hacker News
+            </Text>
+          </View>
+          <ListView
+              dataSource={this.state.dataSource}
+              renderRow={this.renderStory}
+              style={styles.listView}
+            />
+        </View>
       );
     }
   },
@@ -90,7 +97,7 @@ var HNReactNative = React.createClass({
    */
   renderLoad: function() {
     return (
-      <View style={styles.container}>
+      <View style={styles.loadingContainer}>
         <Text style={styles.loading}>
           Loading...
         </Text>
@@ -103,12 +110,12 @@ var HNReactNative = React.createClass({
    */
   renderStory: function(story) {
     return (
-      <View style={styles.container}>
-        <Text>
-          {story.id}
-        </Text>
-        <Text>
+      <View style={styles.rowContainer}>
+        <Text style={styles.title}>
           {story.title}
+        </Text>
+        <Text style={styles.points}>
+          {story.score} points
         </Text>
       </View>
     );
@@ -117,6 +124,9 @@ var HNReactNative = React.createClass({
 
 var styles = StyleSheet.create({
   container: {
+    flex: 1
+  },
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -127,9 +137,35 @@ var styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
+  header: {
+    backgroundColor: "#ff6600",
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: '500',
+    marginLeft: 20,
+    marginTop: 7,
+    marginBottom: 7,
+    fontFamily: 'Verdana',
+    color: '#000000',
+  },
+  rowContainer: {
+    justifyContent: 'center',
+    margin: 5,
+    marginLeft: 10,
+  },
+  title: {
+    fontFamily: 'Verdana',
+    fontSize: 15,
+    color: '#000000',
+  },
+  points: {
+    fontSize: 11,
+    color: "#828282",
+  },
   listView: {
-    paddingTop: 25,
-    backgroundColor: "#F5FCFF",
+    paddingTop: 15,
+    backgroundColor: '#F5FCFF',
   }
 });
 
