@@ -10,6 +10,7 @@ var {
   ListView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } = React;
 
@@ -110,16 +111,23 @@ var HNReactNative = React.createClass({
    */
   renderStory: function(story) {
     return (
-      <View style={styles.rowContainer}>
-        <Text style={styles.title}>
-          {story.title}
-        </Text>
-        <Text style={styles.points}>
-          {story.score} points
-        </Text>
-      </View>
+      // TouchableNativeFeedback looks nicer, but is currently Android only.
+      <TouchableOpacity onPress={this._onButtonPress}>
+        <View style={styles.rowContainer}>
+          <Text style={styles.title}>
+            {story.title}
+          </Text>
+          <Text style={styles.points}>
+            {story.score} points
+          </Text>
+        </View>
+      </TouchableOpacity>
     );
-  }
+  },
+
+  _onButtonPress: function() {
+
+  },
 });
 
 var styles = StyleSheet.create({
