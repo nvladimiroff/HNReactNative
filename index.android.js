@@ -14,6 +14,10 @@ var {
   View,
 } = React;
 
+// Lets us open URLs. Facebook hasn't open sourced their official Android
+// version of this yet. TODO: Remove when they do.
+var WebIntent = require('react-native-webintent');
+
 /**
  * API Docs: https://github.com/HackerNews/API
  * They suggest using Firebase's library, but I wasn't able to get it to work
@@ -74,7 +78,13 @@ var HNReactNative = React.createClass({
    */
   render: function() {
     if (!this.state.loaded) {
-      return this.renderLoad();
+      return (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loading}>
+            Loading...
+          </Text>
+        </View>
+      );
     } else {
       return (
         <View style={styles.container}>
@@ -93,40 +103,34 @@ var HNReactNative = React.createClass({
     }
   },
 
-  /**
-   * Just render a loading message.
-   */
-  renderLoad: function() {
+  renderStory: function(storyJson) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loading}>
-          Loading...
-        </Text>
-      </View>
+      <Row
+        onButtonPress={() => WebIntent.open(storyJson.url)}
+        story={storyJson}
+      />
     );
-  },
+  }
+});
 
+var Row = React.createClass({
   /**
-   * Given the JSON object for a story, render a single row.
+   * Assuming we have the JSON object for a story, render a single row.
    */
-  renderStory: function(story) {
+  render: function() {
     return (
       // TouchableNativeFeedback looks nicer, but is currently Android only.
-      <TouchableOpacity onPress={this._onButtonPress}>
+      <TouchableOpacity onPress={this.props.onButtonPress}>
         <View style={styles.rowContainer}>
           <Text style={styles.title}>
-            {story.title}
+            {this.props.story.title}
           </Text>
           <Text style={styles.points}>
-            {story.score} points
+            {this.props.story.score} points
           </Text>
         </View>
       </TouchableOpacity>
     );
-  },
-
-  _onButtonPress: function() {
-
   },
 });
 

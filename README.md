@@ -1,4 +1,4 @@
-A simple HN React Native client. It currently only supports Android. The app *should* work on iOS, but I haven't tested this yet.
+A simple HN React Native client. It currently only supports Android. It *should* be pretty simple to get this working on iOS as well. All that should have to be done is replace WebIntent with LinkingIOS.
 
 ### Building
 Make sure you have npm and node (>4.0) installed.
