@@ -7,6 +7,7 @@
 var React = require('react-native');
 var {
   AppRegistry,
+  AsyncStorage,
   ListView,
   StyleSheet,
   Text,
@@ -50,6 +51,7 @@ var HNReactNative = React.createClass({
           topStories: responseData.slice(0,30),
         }); })
       .then(() => {
+        AsyncStorage.setItem('topStories', JSON.stringify(this.state.topStories)).done();
         // Once we have the list, we can load all individual JSON data for each
         // story. To do this, we create a list of Promises for each story
         // and then flatten them into a single one with Promise.all.
@@ -57,13 +59,14 @@ var HNReactNative = React.createClass({
           .then((stories) => {
             // stories is our final list of JSON data that we will use for
             // the data source of each row.
+            AsyncStorage.setItem('rowJson', JSON.stringify(stories)).done();
             this.setState({
               dataSource: this.state.dataSource.cloneWithRows(stories),
               loaded: true,
             });
           }).done();
       }).done();
-  },
+    },
 
   /**
    * Get the JSON of a single story. Returns a promise
@@ -79,28 +82,37 @@ var HNReactNative = React.createClass({
   render: function() {
     if (!this.state.loaded) {
       return (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loading}>
-            Loading...
-          </Text>
-        </View>
+        <LoadingView />
       );
     } else {
       return (
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.headerText}>
-              Hacker News
-            </Text>
-          </View>
-          <ListView
-              dataSource={this.state.dataSource}
-              renderRow={this.renderStory}
-              style={styles.listView}
-            />
-        </View>
+        <MainView
+          dataSource={this.state.dataSource}
+        />
       );
     }
+  },
+});
+
+/**
+ * The main view that the user sees: the header and a list of all the stories.
+ */
+var MainView = React.createClass({
+  render: function() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>
+            Hacker News
+          </Text>
+        </View>
+        <ListView
+            dataSource={this.props.dataSource}
+            renderRow={this.renderStory}
+            style={styles.listView}
+          />
+      </View>
+    );
   },
 
   renderStory: function(storyJson) {
@@ -110,13 +122,65 @@ var HNReactNative = React.createClass({
         story={storyJson}
       />
     );
-  }
+  },
 });
 
+/**
+ * Load the rows from AsyncStorage before displaying them, if the
+ * program has been run before. Otherwise just display a 'Loading...'
+ * message until they get downloaded.
+ */
+var LoadingView = React.createClass({
+  getInitialState: function() {
+    return {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+      }),
+
+      firstLoad: true,
+    };
+  },
+
+  componentDidMount: function() {
+    AsyncStorage.getItem('rowJson')
+      .then((rowJson) => {
+        if(rowJson !== null) {
+          var data = JSON.parse(rowJson);
+          this.setState({
+            firstLoad: false,
+            dataSource: this.state.dataSource.cloneWithRows(data),
+          });
+        } else {
+          this.setState({
+            firstLoad: true,
+          })
+        }
+      }).done();
+  },
+
+  render: function() {
+    if(this.state.firstLoad) {
+      return (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loading}>
+            Loading...
+          </Text>
+        </View>
+      );
+    } else {
+      return (
+        <MainView
+          dataSource={this.state.dataSource}
+        />
+      );
+    }
+  },
+});
+
+/**
+ * Assuming we have the JSON object for a story, render a single row.
+ */
 var Row = React.createClass({
-  /**
-   * Assuming we have the JSON object for a story, render a single row.
-   */
   render: function() {
     return (
       // TouchableNativeFeedback looks nicer, but is currently Android only.
