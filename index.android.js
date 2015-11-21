@@ -63,7 +63,7 @@ var HNReactNative = React.createClass({
             });
           }).done();
       }).done();
-  },
+    },
 
   /**
    * Get the JSON of a single story. Returns a promise
@@ -79,28 +79,37 @@ var HNReactNative = React.createClass({
   render: function() {
     if (!this.state.loaded) {
       return (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loading}>
-            Loading...
-          </Text>
-        </View>
+        <LoadingView />
       );
     } else {
       return (
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.headerText}>
-              Hacker News
-            </Text>
-          </View>
-          <ListView
-              dataSource={this.state.dataSource}
-              renderRow={this.renderStory}
-              style={styles.listView}
-            />
-        </View>
+        <MainView
+          dataSource={this.state.dataSource}
+        />
       );
     }
+  },
+});
+
+/**
+ * The main view that the user sees: the header and a list of all the stories.
+ */
+var MainView = React.createClass({
+  render: function() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>
+            Hacker News
+          </Text>
+        </View>
+        <ListView
+            dataSource={this.props.dataSource}
+            renderRow={this.renderStory}
+            style={styles.listView}
+          />
+      </View>
+    );
   },
 
   renderStory: function(storyJson) {
@@ -110,13 +119,28 @@ var HNReactNative = React.createClass({
         story={storyJson}
       />
     );
-  }
+  },
 });
 
+/**
+ * Just display a 'Loading...' message while the data is downloaded.
+ */
+var LoadingView = React.createClass({
+  render: function() {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loading}>
+          Loading...
+        </Text>
+      </View>
+    );
+  },
+});
+
+/**
+ * Assuming we have the JSON object for a story, render a single row.
+ */
 var Row = React.createClass({
-  /**
-   * Assuming we have the JSON object for a story, render a single row.
-   */
   render: function() {
     return (
       // TouchableNativeFeedback looks nicer, but is currently Android only.
