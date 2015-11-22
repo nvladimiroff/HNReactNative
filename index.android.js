@@ -85,6 +85,7 @@ var HNReactNative = React.createClass({
       return (
         <MainView
           dataSource={this.state.dataSource}
+          refresh={() => { return; } }
         />
       );
     }
@@ -102,6 +103,11 @@ var MainView = React.createClass({
           <Text style={styles.headerText}>
             Hacker News
           </Text>
+          <TouchableOpacity onPress={this.props.refresh} style={styles.refresh}>
+            <Text>
+              Refresh
+            </Text>
+          </TouchableOpacity>
         </View>
         <ListView
             dataSource={this.props.dataSource}
@@ -174,6 +180,8 @@ var styles = StyleSheet.create({
     margin: 10,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     backgroundColor: "#ff6600",
   },
   headerText: {
@@ -202,6 +210,10 @@ var styles = StyleSheet.create({
   listView: {
     paddingTop: 15,
     backgroundColor: '#F5FCFF',
+  },
+  refresh: {
+    alignSelf: 'center',
+    marginRight: 10,
   }
 });
 
