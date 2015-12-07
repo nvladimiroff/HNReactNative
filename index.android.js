@@ -42,6 +42,10 @@ var HNReactNative = React.createClass({
   },
 
   componentDidMount: function() {
+    this.loadFromServer();
+  },
+
+  loadFromServer: function() {
     // First, we load the list of top stories.
     fetch(apiurl + "topstories.json")
       .then((response) => response.json())
@@ -63,7 +67,7 @@ var HNReactNative = React.createClass({
             });
           }).done();
       }).done();
-    },
+   },
 
   /**
    * Get the JSON of a single story. Returns a promise
@@ -85,7 +89,10 @@ var HNReactNative = React.createClass({
       return (
         <MainView
           dataSource={this.state.dataSource}
-          refresh={() => { return; } }
+          refresh={() => {
+            this.setState({ loaded: false });
+            this.loadFromServer();
+          } }
         />
       );
     }
@@ -208,7 +215,7 @@ var styles = StyleSheet.create({
     color: "#828282",
   },
   listView: {
-    paddingTop: 15,
+    paddingTop: 10,
     backgroundColor: '#F5FCFF',
   },
   refresh: {
