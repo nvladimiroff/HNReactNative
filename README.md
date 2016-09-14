@@ -1,5 +1,7 @@
 A simple HN React Native client. It currently only supports Android. It *should* work on iOS, but I haven't tested it.
 
+![Screenshot](http://i.imgur.com/rArhqYR.png)
+
 ### Building
 First, make sure you have npm and node (>4.0) installed. Next, install the react developer tools.
 ````
